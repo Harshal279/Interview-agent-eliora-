@@ -15,7 +15,6 @@ def evaluate_candidate_answer(candidate_answer, question):
         "question": "what is your experience with python programming?",
         "answer": "i have been working with python for 5 years and have experience in web development, data analysis, and machine learning.",
         "overall_score": overall_score,
-        "feedback": "could add more depth",
         "recommendation": "study advanced data structured",
     }
     return evaluation_result
