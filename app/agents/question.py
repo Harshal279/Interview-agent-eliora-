@@ -1,3 +1,5 @@
+from schedule import Job
+
 from services.resume import extract_text_from_pdf
 from llm import get_openai_client
 
@@ -17,7 +19,8 @@ Generate:
 
 Resume:
 {resume}
-
+intro :
+{}
 Return only the questions.
 """
 
