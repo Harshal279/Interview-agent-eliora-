@@ -1,24 +1,20 @@
 import pypdf 
 from fastapi import APIRouter
 
-router = APIRouter(
-    prefix="/resume",
-    tags=["Resume"]
-)
-
-@router.get("/")
-async def get_resume():
+def get_resume():
     return {
         "message": "Resume endpoint working"
     }
 
-@router.post("/upload")
-async def upload_resume():
+def upload_resume():
     return {
         "message": "Resume uploaded successfully"
     }
 
-reader = pypdf.PdfReader("resume.pdf")
-
-for page in reader.pages:
-    print(page.extract_text())
+def extract_text_from_pdf(file_path: str):
+    reader = pypdf.PdfReader(file_path)
+    text = ""
+    for page in reader.pages:
+        text += page.extract_text()
+    print ("Extracted text from PDF:")
+    return text

@@ -1,6 +1,8 @@
 from fastapi import FastAPI
-from services.resume import router as resume_router
 from fastapi.middleware.cors import CORSMiddleware
+
+from agents.question import generate_interview_questions
+from services.resume import extract_text_from_pdf
 
 app = FastAPI(
     title="AI Interview Engine",
@@ -8,29 +10,29 @@ app = FastAPI(
     version="1.0.0"
 )
 
-# CORS Configuration
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],  
+    allow_origins=["*"],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
 )
 
-
-app = FastAPI(
-    title="AI Interview Engine"
-)
+def generate_questions(resume_text: str):
+    return generate_interview_questions(resume_text)
 
 
 @app.get("/")
 async def root():
+
+    resume_text = extract_text_from_pdf("resume.pdf")
+
+    questions = generate_questions(resume_text)
+
     return {
-        "message": "AI Interview Engine API is running!"
+        "questions": questions
     }
 
-
-app.include_router(resume_router)
 
 @app.get("/health")
 async def health_check():
