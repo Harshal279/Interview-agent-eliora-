@@ -1,50 +1,55 @@
-def evaluate_candidate_answer(candidate_answer, question):
-    """ takes the candidate answer and question and evaluate it 
-    """
-    core_components = {
-        "clarity": 8,
-        "accuracy": 9,
-        "depth": 7.5,
-        "communication": 6
-    }
+from agents import memory
+from llm import get_openai_client
 
-    overall_score = sum(core_components.values()) / len(core_components)
+client = get_openai_client()
 
-    evaluation_result = {
-        "question_id": "Q04",
-        "question": "what is your experience with python programming?",
-        "answer": "i have been working with python for 5 years and have experience in web development, data analysis, and machine learning.",
-        "overall_score": overall_score,
-        "feedback": "could add more depth",
-        "recommendation": "study advanced data structured",
-    }
-    return evaluation_result
+profile = memory.get_profile()
 
+history = memory.get_history()
 
-class ConversationMemory:
-    # store and retrieve history
+def evaluate_interview_questions(resume: str):
 
-    def __init__(self):
-        self.conversation_history = []
+    prompt =f""" You are an AI Interviewer.
 
-    def add_to_memory(self, question, answer, evaluation):
+Generate the next interview question.
 
-        entry = {
-            "question": question,
-            "answer": answer,
-            "evaluation": evaluation
-        }  
-        self.conversation_history.append(entry)
+Rules:
 
-    def get_context(self, num_recent=3):
-        return self.conversation_history[-num_recent:]
+1. Never repeat a previous question.
 
-    def get_score_summary(self):
+2. If the candidate has weaknesses, ask questions that test those areas.
 
-        scores= [entry['evaluation']['overall_score']
-                 for entry in self.conversation_history]
+3. If confidence is low, begin with a slightly easier question.
 
-        average_scores=sum(scores)/len(scores) if scores else 0
+4. If technical score is consistently high (>8), gradually increase difficulty.
 
-        return
+5. Prefer follow-up topics suggested by previous evaluations.
 
+6. Avoid asking about already mastered topics unless verifying consistency.
+
+Return only:
+
+{
+    "question": "...",
+    "grounded answer to the question": "...",
+    "difficulty": "...",
+    "topic": "...",
+    "reason": "..."
+}
+"""
+    response = client.chat.completions.create(
+        model="qwen/qwen3.6-27b",
+        messages=[
+            {
+                "role": "system",
+                "content": "You are an AI Interviewer."
+            },
+            {
+                "role": "user",
+                "content": prompt
+            }
+        ],
+        temperature=0.5
+    )
+
+    return response.choices[0].message.content

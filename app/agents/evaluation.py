@@ -1,6 +1,7 @@
 import json
 from openai import OpenAI
-from agents.question import generate_interview_questions
+from agents.question import generate_interview_questions,next_question
+
 
 
 client = OpenAI(
@@ -8,8 +9,10 @@ client = OpenAI(
     base_url="https://api.groq.com/openai/v1"
 )
 
+generated_question = next_question
+candidate_answer= None
 
-def evaluator(generated_question: str, candidate_answer: str, grounded_answer: str):
+def evaluator(generated_question: str, candidate_answer: str):
 
     prompt = f"""
 You are an expert AI Technical Interview Evaluator.
@@ -19,9 +22,6 @@ Question:
 
 Candidate Answer:
 {candidate_answer}
-
-Grounded answer :
-{grounded_answer}
 
 Evaluate the answer.
 
