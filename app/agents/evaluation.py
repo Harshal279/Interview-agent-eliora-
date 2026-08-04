@@ -1,5 +1,7 @@
 import json
 from openai import OpenAI
+from agents.question import generate_interview_questions
+
 
 client = OpenAI(
     api_key="",
